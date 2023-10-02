@@ -2,60 +2,33 @@ package main
 
 import (
 	"fmt"
+	//import "log"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-
-	//"log"
-	"time"
+	mqtt "github.com/eclipse/paho.mqtt.golang" // importo la libreria paho per gestire MQTT da Go
 )
 
-var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-}
-
-var connectHandler mqtt.OnConnectHandler = func(client mqtt.Client) {
-	fmt.Println("Connected")
-}
-
-var connectLostHandler mqtt.ConnectionLostHandler = func(client mqtt.Client, err error) {
-	fmt.Printf("Connect lost: %v", err)
-}
-
 func main() {
-	var broker = "127.0.0.1"
-	var port = 1883
-	opts := mqtt.NewClientOptions()
-	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port))
-	opts.SetClientID("go_mqtt_client")
-	//opts.SetUsername("emqx")
-	//opts.SetPassword("public")
-	opts.SetDefaultPublishHandler(messagePubHandler)
-	opts.OnConnect = connectHandler
-	opts.OnConnectionLost = connectLostHandler
-	client := mqtt.NewClient(opts)
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
+	// definisco delle costanti per la connessione al broker MQTT
+	const (
+		broker = "127.0.0.1"
+		port   = 1883
+		hostId = "subscriber" // ID del client
+		topic  = "test"
+	)
+
+	opts := mqtt.NewClientOptions()                          // tramite questa variabile verranno impostate tutte le opzioni utili per la connessione al broker MQTT
+	opts.AddBroker(fmt.Sprintf("tcp://%s:%d", broker, port)) // imposto l'indirizzo del broker
+	opts.SetClientID(hostId)                                 // imposto l'ID del client
+	//opts.SetUsername("username")                           // imposto lo username (se richiesto)
+	//opts.SetPassword("password")                           // imposto la password (se richiesta)
+	client := mqtt.NewClient(opts) // inizializzo il client
+
+	connectionToken := client.Connect() // effettuo la connessione
+
+	if !connectionToken.Wait() || connectionToken.Error() == nil {
+		fmt.Println("Connected to the MQTT broker!")
+	} else {
+		fmt.Println(connectionToken.Error()) // si può provare la generazione di questo messaggio d'errore ad esempio indicando un IP o una porta sbagliati
 	}
 
-	sub(client)
-	publish(client)
-
-	client.Disconnect(250)
-}
-
-func publish(client mqtt.Client) {
-	num := 10
-	for i := 0; i < num; i++ {
-		text := fmt.Sprintf("Message %d", i)
-		token := client.Publish("topic/test", 0, false, text)
-		token.Wait()
-		time.Sleep(time.Second)
-	}
-}
-
-func sub(client mqtt.Client) {
-	topic := "topic/test"
-	token := client.Subscribe(topic, 1, nil)
-	token.Wait()
-	fmt.Printf("Subscribed to topic: %s", topic)
 }
