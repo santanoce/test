@@ -41,7 +41,7 @@ func findMax(mappa map[int]int) (int, int) {
 func onReceiveMessage(client mqtt.Client, message mqtt.Message) {
 	topic := message.Topic()
 	payload := message.Payload()
-	tmp, _ := strconv.Atoi(fmt.Sprintf("%s", payload))
+	tmp, _ := strconv.Atoi(string(payload))
 	fmt.Printf("Nuovo messaggio! Topic: %v\tPayload: %s\n", topic, payload)
 
 	switch topic {
