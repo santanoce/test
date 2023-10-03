@@ -14,24 +14,28 @@ import (
 
 var temperature = make(map[int]int)
 
-func findMin(mappa map[int]int) int {
+func findMin(mappa map[int]int) (int, int) {
 	min := math.MaxInt
-	for _, v := range mappa {
+	indice := 0
+	for i, v := range mappa {
 		if v < min {
 			min = v
+			indice = i
 		}
 	}
-	return min
+	return min, indice
 }
 
-func findMax(mappa map[int]int) int {
+func findMax(mappa map[int]int) (int, int) {
 	max := math.MinInt
-	for _, v := range mappa {
+	indice := 0
+	for i, v := range mappa {
 		if v > max {
 			max = v
+			indice = i
 		}
 	}
-	return max
+	return max, indice
 }
 
 func onReceiveMessage(client mqtt.Client, message mqtt.Message) {
@@ -49,8 +53,11 @@ func onReceiveMessage(client mqtt.Client, message mqtt.Message) {
 		temperature[3] = tmp
 	}
 	fmt.Println("Le temperature attuali sono:", temperature)
-	fmt.Println("La temperatura minima è:", findMin(temperature))
-	fmt.Println("La temperatura massima è:", findMax(temperature))
+
+	min, indiceMin := findMin(temperature)
+	max, indiceMax := findMax(temperature)
+	fmt.Println("La temperatura minima è:", min, "e si trova nella stanza", indiceMin)
+	fmt.Println("La temperatura massima è:", max, "e si trova nella stanza", indiceMax)
 }
 
 func main() {
