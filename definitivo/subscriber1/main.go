@@ -18,7 +18,7 @@ func main() {
 	clientID := "subscriber1"
 	client := libmqtt.Connect(clientID)
 
-	subscriptionToken := client.Subscribe("temperature", 0, onReceiveMessage) // faccio la subscription al topic; il secondo parametro è il QoS mentre il terzo è la funzione da chiamare quando si riceve un messaggio
+	subscriptionToken := client.Subscribe("temperature/#", 0, onReceiveMessage) // faccio la subscription al topic; il secondo parametro è il QoS mentre il terzo è la funzione da chiamare quando si riceve un messaggio
 
 	if subscriptionToken.Wait() && subscriptionToken.Error() != nil {
 		fmt.Println(subscriptionToken.Error())

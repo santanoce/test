@@ -2,6 +2,8 @@ package libmqtt
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -27,4 +29,14 @@ func Connect(clientID string) mqtt.Client {
 	}
 
 	return client
+}
+
+func PublishRandomTemp(client mqtt.Client, topic string) {
+	for {
+		tmp := rand.Intn(40)
+		text := fmt.Sprintf("%d", tmp)
+		token := client.Publish(topic, 0, true, text)
+		token.Wait()
+		time.Sleep(time.Second)
+	}
 }
