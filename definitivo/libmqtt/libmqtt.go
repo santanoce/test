@@ -36,7 +36,8 @@ func PublishRandomTemp(client mqtt.Client, topic string) {
 		tmp := rand.Intn(40)
 		text := fmt.Sprintf("%d", tmp)
 		token := client.Publish(topic, 0, true, text)
+		fmt.Println("Invio temperatura attuale:", tmp)
 		token.Wait()
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 10)
 	}
 }
