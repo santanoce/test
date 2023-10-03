@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"syscall"
-
-	//import "log"
 	"os"
 	"os/signal"
+	"syscall"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang" // importo la libreria paho per gestire MQTT da Go
 )
